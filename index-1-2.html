@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALMAN × SHAH // CYBER.TERMINAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --neon: #ff0033;
+  --neon2: #ff4466;
+  --dark: #030008;
+  --panel: #0a0010;
+  --grid: rgba(255,0,51,0.06);
+  --text: #ffcccc;
+  --muted: #663344;
+  --cyan: #00ffcc;
+  --yellow: #ffcc00;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* SCANLINES */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:1000;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+}
+
+/* GRID BG */
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%,100% { opacity:0.5; }
+  50% { opacity:1; }
+}
+
+/* CURSOR */
+.cursor {
+  width:20px; height:20px;
+  border:1px solid var(--neon);
+  position:fixed; top:0; left:0;
+  pointer-events:none; z-index:9999;
+  transition:transform 0.08s linear;
+  box-shadow:0 0 10px var(--neon), inset 0 0 6px rgba(255,0,51,0.3);
+}
+.cursor-cross {
+  position:fixed; top:0; left:0;
+  pointer-events:none; z-index:9999;
+  width:20px; height:20px;
+}
+.cursor-cross::before, .cursor-cross::after {
+  content:'';
+  position:absolute; background:var(--neon);
+}
+.cursor-cross::before { width:1px; height:20px; left:50%; top:0; }
+.cursor-cross::after  { width:20px; height:1px; top:50%; left:0; }
+
+/* GLITCH keyframes */
+@keyframes glitch1 {
+  0%,100% { clip-path:inset(0 0 95% 0); transform:translate(-4px,0); }
+  20% { clip-path:inset(30% 0 50% 0); transform:translate(4px,0); }
+  40% { clip-path:inset(60% 0 20% 0); transform:translate(-2px,0); }
+  60% { clip-path:inset(80% 0 5% 0); transform:translate(3px,0); }
+  80% { clip-path:inset(10% 0 75% 0); transform:translate(-3px,0); }
+}
+@keyframes glitch2 {
+  0%,100% { clip-path:inset(40% 0 40% 0); transform:translate(4px,0); color:var(--cyan); }
+  30% { clip-path:inset(70% 0 15% 0); transform:translate(-4px,0); }
+  60% { clip-path:inset(5% 0 80% 0); transform:translate(2px,0); color:var(--yellow); }
+}
+@keyframes flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% { opacity:1; }
+  20%,24%,55% { opacity:0.3; }
+}
+@keyframes scanline {
+  0% { top:-10%; }
+  100% { top:110%; }
+}
+@keyframes blink { 50% { opacity:0; } }
+@keyframes typeIn {
+  from { width:0; }
+  to { width:100%; }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes borderPulse {
+  0%,100% { border-color:rgba(255,0,51,0.3); box-shadow:0 0 10px rgba(255,0,51,0.1); }
+  50% { border-color:rgba(255,0,51,0.8); box-shadow:0 0 20px rgba(255,0,51,0.4); }
+}
+
+/* MOVING SCANLINE */
+.scanline {
+  position:fixed; left:0; right:0; height:2px;
+  background:linear-gradient(to right, transparent, rgba(255,0,51,0.6), transparent);
+  animation:scanline 6s linear infinite;
+  pointer-events:none; z-index:999;
+}
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px;
+  height:60px;
+  background:rgba(3,0,8,0.95);
+  border-bottom:1px solid rgba(255,0,51,0.3);
+  box-shadow:0 0 30px rgba(255,0,51,0.1);
+}
+
+.nav-id {
+  display:flex; align-items:center; gap:16px;
+}
+
+.nav-badge {
+  padding:4px 12px;
+  border:1px solid var(--neon);
+  font-size:10px; letter-spacing:3px;
+  color:var(--neon);
+  text-transform:uppercase;
+  box-shadow:0 0 10px rgba(255,0,51,0.3);
+  animation:borderPulse 2s ease-in-out infinite;
+}
+
+.nav-logo {
+  font-family:'Orbitron', sans-serif;
+  font-size:18px; font-weight:900;
+  letter-spacing:4px;
+  color:var(--text);
+}
+
+.nav-logo span { color:var(--neon); text-shadow:0 0 10px var(--neon); }
+
+.nav-status {
+  display:flex; align-items:center; gap:20px;
+  font-size:10px; letter-spacing:2px; color:var(--muted);
+}
+
+.status-dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan);
+  animation:blink 1s step-end infinite;
+}
+
+.nav-links {
+  display:flex; gap:30px; list-style:none;
+}
+
+.nav-links a {
+  color:var(--muted);
+  text-decoration:none;
+  font-size:11px; letter-spacing:3px;
+  text-transform:uppercase;
+  transition:all 0.2s;
+  position:relative;
+}
+
+.nav-links a::before {
+  content:'>';
+  margin-right:6px;
+  opacity:0;
+  color:var(--neon);
+  transition:opacity 0.2s;
+}
+
+.nav-links a:hover { color:var(--neon); }
+.nav-links a:hover::before { opacity:1; }
+
+/* HERO */
+#hero {
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:80px 60px 60px;
+  overflow:hidden;
+}
+
+.terminal-header {
+  font-size:11px; color:var(--muted); letter-spacing:2px;
+  margin-bottom:60px;
+  animation:fadeUp 0.5s ease both;
+}
+
+.terminal-header span { color:var(--cyan); }
+
+.glitch-title {
+  position:relative;
+  font-family:'Orbitron', sans-serif;
+  font-size:clamp(50px,9vw,130px);
+  font-weight:900;
+  letter-spacing:8px;
+  line-height:1;
+  color:var(--text);
+  animation:flicker 5s infinite;
+  text-shadow:0 0 40px rgba(255,0,51,0.3);
+  user-select:none;
+}
+
+.glitch-title::before,
+.glitch-title::after {
+  content:attr(data-text);
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+}
+
+.glitch-title::before {
+  animation:glitch1 3s infinite linear;
+  color:var(--neon);
+  opacity:0.8;
+}
+
+.glitch-title::after {
+  animation:glitch2 3s infinite linear;
+  color:var(--cyan);
+  opacity:0.6;
+}
+
+.x-divider {
+  color:var(--neon);
+  text-shadow:0 0 20px var(--neon), 0 0 60px rgba(255,0,51,0.5);
+  display:block;
+  font-size:clamp(40px,7vw,100px);
+}
+
+.type-line {
+  font-size:14px; letter-spacing:3px;
+  color:var(--cyan);
+  margin-top:40px;
+  overflow:hidden;
+  white-space:nowrap;
+  border-right:2px solid var(--cyan);
+  animation:typeIn 2s steps(40) 1s both, blink 0.8s step-end 3s infinite;
+  max-width:500px;
+}
+
+.hero-tags {
+  display:flex; flex-wrap:wrap; gap:12px;
+  margin-top:40px;
+  animation:fadeUp 0.8s ease 0.5s both;
+}
+
+.hero-tag {
+  padding:8px 16px;
+  border:1px solid rgba(255,0,51,0.3);
+  font-size:10px; letter-spacing:3px;
+  color:var(--muted);
+  text-transform:uppercase;
+  transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+
+.hero-tag::before {
+  content:'';
+  position:absolute; inset:0;
+  background:var(--neon);
+  transform:translateX(-100%);
+  transition:transform 0.3s;
+  opacity:0.1;
+}
+
+.hero-tag:hover { color:var(--neon); border-color:var(--neon); }
+.hero-tag:hover::before { transform:translateX(0); }
+
+.hero-cta {
+  margin-top:50px;
+  display:flex; gap:16px;
+  animation:fadeUp 0.8s ease 0.8s both;
+}
+
+.btn-cyber {
+  padding:14px 36px;
+  background:transparent;
+  border:1px solid var(--neon);
+  color:var(--neon);
+  font-family:'Orbitron', sans-serif;
+  font-size:12px; font-weight:700;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  text-decoration:none;
+  cursor:pointer;
+  position:relative; overflow:hidden;
+  transition:all 0.3s;
+  box-shadow:0 0 20px rgba(255,0,51,0.2), inset 0 0 20px rgba(255,0,51,0.05);
+}
+
+.btn-cyber::before {
+  content:'';
+  position:absolute; top:0; left:-100%; width:100%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,0,51,0.2), transparent);
+  transition:left 0.4s;
+}
+
+.btn-cyber:hover { background:rgba(255,0,51,0.1); box-shadow:0 0 40px rgba(255,0,51,0.5); }
+.btn-cyber:hover::before { left:100%; }
+
+.btn-ghost {
+  padding:14px 36px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--muted);
+  font-family:'Orbitron', sans-serif;
+  font-size:12px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.btn-ghost:hover { border-color:rgba(255,0,51,0.4); color:var(--text); }
+
+/* CORNER DECORATIONS */
+.corner {
+  position:absolute;
+  width:20px; height:20px;
+  border-color:var(--neon);
+  border-style:solid;
+  opacity:0.4;
+}
+.corner-tl { top:80px; left:20px; border-width:1px 0 0 1px; }
+.corner-tr { top:80px; right:20px; border-width:1px 1px 0 0; }
+.corner-bl { bottom:20px; left:20px; border-width:0 0 1px 1px; }
+.corner-br { bottom:20px; right:20px; border-width:0 1px 1px 0; }
+
+/* DATA READOUT - right side */
+.data-readout {
+  position:absolute; right:60px; top:50%; transform:translateY(-50%);
+  font-size:10px; color:var(--muted); letter-spacing:1px;
+  line-height:2;
+  animation:fadeUp 1s ease 1s both;
+}
+
+.data-readout .val { color:var(--neon); }
+.data-readout .val2 { color:var(--cyan); }
+
+/* SECTIONS */
+section {
+  position:relative; z-index:1;
+  padding:80px 60px;
+}
+
+.sec-header {
+  display:flex; align-items:center; gap:16px;
+  margin-bottom:60px;
+  font-family:'Orbitron', sans-serif;
+}
+
+.sec-num {
+  font-size:11px; color:var(--muted); letter-spacing:3px;
+}
+
+.sec-title {
+  font-size:clamp(24px,4vw,48px);
+  font-weight:900; letter-spacing:6px;
+  color:var(--text);
+  text-shadow:0 0 20px rgba(255,0,51,0.3);
+}
+
+.sec-line {
+  flex:1; height:1px;
+  background:linear-gradient(to right, rgba(255,0,51,0.4), transparent);
+}
+
+.sec-tag {
+  font-size:10px; color:var(--neon); letter-spacing:3px;
+}
+
+/* TERMINAL PANEL */
+.terminal-panel {
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.2);
+  padding:30px;
+  position:relative;
+  animation:borderPulse 3s ease-in-out infinite;
+}
+
+.terminal-panel::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(to right, var(--neon), transparent);
+}
+
+.terminal-topbar {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:24px;
+  padding-bottom:16px;
+  border-bottom:1px solid rgba(255,0,51,0.1);
+}
+
+.t-dot {
+  width:8px; height:8px; border-radius:50%;
+}
+.t-dot:nth-child(1) { background:#ff5f56; }
+.t-dot:nth-child(2) { background:#ffbd2e; }
+.t-dot:nth-child(3) { background:#27c93f; }
+
+.terminal-title-bar {
+  font-size:10px; color:var(--muted); letter-spacing:2px;
+  margin-left:8px;
+}
+
+.terminal-text {
+  font-size:13px; line-height:2.2;
+  color:rgba(255,204,204,0.7);
+}
+
+.terminal-text .prompt { color:var(--neon); margin-right:8px; }
+.terminal-text .cmd { color:var(--cyan); }
+.terminal-text .out { color:rgba(255,204,204,0.6); padding-left:20px; }
+
+/* PROFILE GRID */
+.profile-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+  margin-top:40px;
+}
+
+.profile-cell {
+  padding:30px;
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.1);
+  transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+
+.profile-cell::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:var(--neon);
+  transform:scaleX(0);
+  transition:transform 0.3s;
+  box-shadow:0 0 10px var(--neon);
+}
+
+.profile-cell:hover { background:rgba(255,0,51,0.05); }
+.profile-cell:hover::after { transform:scaleX(1); }
+
+.cell-label {
+  font-size:9px; letter-spacing:4px;
+  color:var(--muted); text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+.cell-val {
+  font-family:'Orbitron', sans-serif;
+  font-size:28px; font-weight:700;
+  color:var(--neon);
+  text-shadow:0 0 20px rgba(255,0,51,0.5);
+}
+
+.cell-sub {
+  font-size:11px; color:var(--muted); margin-top:6px;
+  letter-spacing:2px;
+}
+
+/* SKILLS CYBER */
+.skill-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:2px;
+}
+
+.skill-module {
+  padding:40px 30px;
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.1);
+  transition:all 0.4s;
+  position:relative; overflow:hidden;
+  cursor:default;
+}
+
+.skill-module::before {
+  content:'';
+  position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:var(--neon);
+  box-shadow:0 0 10px var(--neon);
+  transform:scaleY(0);
+  transition:transform 0.4s;
+}
+
+.skill-module:hover { background:rgba(255,0,51,0.06); transform:translateX(6px); }
+.skill-module:hover::before { transform:scaleY(1); }
+
+.module-id {
+  font-size:9px; color:var(--neon); letter-spacing:4px;
+  margin-bottom:16px;
+}
+
+.module-name {
+  font-family:'Orbitron', sans-serif;
+  font-size:20px; font-weight:700;
+  color:var(--text); letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.module-desc {
+  font-size:12px; line-height:2;
+  color:var(--muted); font-family:'Rajdhani', sans-serif;
+  font-size:14px; font-weight:300;
+}
+
+.module-bar {
+  margin-top:20px;
+  height:2px; background:rgba(255,0,51,0.1);
+  position:relative; overflow:hidden;
+}
+
+.module-bar-fill {
+  height:100%;
+  background:linear-gradient(to right, var(--neon), var(--cyan));
+  box-shadow:0 0 8px var(--neon);
+  transition:width 1.5s cubic-bezier(0.16,1,0.3,1);
+  width:0;
+}
+
+.module-pct {
+  font-size:10px; color:var(--cyan); letter-spacing:2px;
+  margin-top:6px; text-align:right;
+}
+
+/* PHILOSOPHY - CYBER */
+#philosophy {
+  background:rgba(10,0,16,0.8);
+}
+
+.pillar-cyber {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  margin:40px 0;
+}
+
+.pillar-cell {
+  padding:50px 30px;
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.1);
+  text-align:center;
+  transition:all 0.4s;
+  position:relative; overflow:hidden;
+}
+
+.pillar-cell:hover {
+  background:rgba(255,0,51,0.05);
+  box-shadow:0 0 40px rgba(255,0,51,0.1) inset;
+}
+
+.pillar-hex {
+  font-family:'Orbitron', sans-serif;
+  font-size:11px; color:var(--neon); letter-spacing:4px;
+  margin-bottom:20px; display:block;
+}
+
+.pillar-word-cyber {
+  font-family:'Orbitron', sans-serif;
+  font-size:28px; font-weight:900; letter-spacing:4px;
+  color:var(--text); display:block;
+  text-shadow:0 0 20px rgba(255,0,51,0.3);
+  margin-bottom:16px;
+}
+
+.pillar-def {
+  font-size:12px; color:var(--muted); line-height:2;
+  font-family:'Rajdhani', sans-serif;
+  font-weight:300; font-size:14px;
+}
+
+.big-system-quote {
+  font-family:'Orbitron', sans-serif;
+  font-size:clamp(14px,2.5vw,26px);
+  font-weight:700; letter-spacing:4px;
+  color:var(--text); line-height:1.6;
+  text-align:center;
+  padding:60px;
+  border:1px solid rgba(255,0,51,0.15);
+  background:var(--panel);
+  position:relative;
+}
+
+.big-system-quote em {
+  color:var(--neon);
+  font-style:normal;
+  text-shadow:0 0 20px var(--neon);
+}
+
+.big-system-quote::before {
+  content:'// SYSTEM.OUTPUT';
+  position:absolute; top:20px; left:30px;
+  font-size:10px; color:var(--muted); letter-spacing:3px;
+}
+
+/* CONTACT CYBER */
+.contact-cyber {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+}
+
+.social-cyber {
+  display:flex; flex-direction:column; gap:2px;
+}
+
+.social-entry {
+  display:flex; align-items:center; gap:20px;
+  padding:24px 28px;
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.1);
+  text-decoration:none;
+  transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+
+.social-entry::before {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(to right, rgba(255,0,51,0.1), transparent);
+  transform:translateX(-100%);
+  transition:transform 0.3s;
+}
+
+.social-entry:hover { border-color:rgba(255,0,51,0.5); }
+.social-entry:hover::before { transform:translateX(0); }
+
+.se-icon {
+  width:36px; height:36px;
+  border:1px solid rgba(255,0,51,0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--neon);
+  font-family:'Orbitron', sans-serif;
+  flex-shrink:0;
+}
+
+.se-info { flex:1; }
+
+.se-platform {
+  font-size:9px; color:var(--muted); letter-spacing:3px;
+  text-transform:uppercase; margin-bottom:4px;
+}
+
+.se-handle {
+  font-family:'Orbitron', sans-serif;
+  font-size:16px; font-weight:700;
+  color:var(--text); letter-spacing:2px;
+}
+
+.se-arrow {
+  color:var(--neon); font-size:18px;
+  transition:transform 0.3s;
+}
+
+.social-entry:hover .se-arrow { transform:translateX(6px); }
+
+.contact-form-cyber {
+  background:var(--panel);
+  border:1px solid rgba(255,0,51,0.2);
+  padding:40px;
+  position:relative;
+}
+
+.contact-form-cyber::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(to right, var(--neon), var(--cyan), transparent);
+}
+
+.form-label {
+  font-size:9px; color:var(--neon); letter-spacing:3px;
+  text-transform:uppercase; margin-bottom:6px; display:block;
+}
+
+.cyber-input {
+  width:100%; margin-bottom:16px;
+  background:rgba(255,0,51,0.04);
+  border:1px solid rgba(255,0,51,0.2);
+  color:var(--text);
+  padding:12px 16px;
+  font-family:'Share Tech Mono', monospace;
+  font-size:13px;
+  outline:none;
+  transition:all 0.3s;
+  resize:none;
+}
+
+.cyber-input:focus {
+  border-color:var(--neon);
+  box-shadow:0 0 20px rgba(255,0,51,0.2);
+  background:rgba(255,0,51,0.06);
+}
+
+.cyber-input::placeholder { color:rgba(102,51,68,0.6); font-size:11px; letter-spacing:2px; }
+
+/* FOOTER */
+footer {
+  position:relative; z-index:1;
+  padding:30px 60px;
+  border-top:1px solid rgba(255,0,51,0.2);
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(3,0,8,0.9);
+}
+
+.footer-id {
+  font-family:'Orbitron', sans-serif;
+  font-size:16px; font-weight:900; letter-spacing:4px;
+  color:var(--text);
+}
+.footer-id span { color:var(--neon); text-shadow:0 0 10px var(--neon); }
+
+.footer-sys {
+  font-size:9px; color:var(--muted); letter-spacing:3px;
+  text-transform:uppercase;
+}
+
+.footer-sys span { color:var(--cyan); margin:0 6px; }
+
+/* APPEAR */
+.appear { opacity:0; transform:translateY(20px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.appear.visible { opacity:1; transform:translateY(0); }
+
+@media(max-width:900px){
+  section { padding:60px 20px; }
+  #hero { padding:80px 20px 60px; }
+  .profile-grid,.contact-cyber,.pillar-cyber { grid-template-columns:1fr; }
+  .data-readout { display:none; }
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  footer { flex-direction:column; gap:12px; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-cross" id="cross"></div>
+<div class="scanline"></div>
+
+<nav>
+  <div class="nav-id">
+    <div class="nav-badge">ONLINE</div>
+    <div class="nav-logo">SALMAN<span>×</span>SHAH</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">./about</a></li>
+    <li><a href="#skills">./skills</a></li>
+    <li><a href="#philosophy">./philosophy</a></li>
+    <li><a href="#contact">./contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYS.ACTIVE
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <div class="terminal-header">
+    [USER_ID::<span>SALMAN_SHAH</span>] — [STATUS::<span>ACTIVE</span>] — [NODE::<span>WEB3.CREATIVE.DESIGN</span>]
+  </div>
+
+  <h1 class="glitch-title" data-text="SALMAN">SALMAN</h1>
+  <h1 class="glitch-title x-divider" data-text="×">×</h1>
+  <h1 class="glitch-title" data-text="SHAH">SHAH</h1>
+
+  <div class="type-line">// FOCUS · DISCIPLINE · LOYALTY · 月読</div>
+
+  <div class="hero-tags">
+    <span class="hero-tag">CONTENT_CREATOR</span>
+    <span class="hero-tag">GRAPHICS_DESIGNER</span>
+    <span class="hero-tag">WEB3_EXPLORER</span>
+    <span class="hero-tag">CONTRIBUTOR</span>
+    <span class="hero-tag">SHARINGAN_ACTIVE</span>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#contact" class="btn-cyber">INITIATE_CONTACT</a>
+    <a href="#skills" class="btn-ghost">SCAN_PROFILE</a>
+  </div>
+
+  <div class="data-readout">
+    <div>ALIAS <span class="val">SALMAN2SHAH</span></div>
+    <div>DISCORD <span class="val">SSSALMAN</span></div>
+    <div>TELEGRAM <span class="val2">SALMANSHAH08</span></div>
+    <div>CLAN <span class="val">UCHIHA</span></div>
+    <div>TECHNIQUE <span class="val2">TSUKUYOMI</span></div>
+    <div>MOTTO <span class="val">FDL.PROTOCOL</span></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-header appear">
+    <span class="sec-num">[01]</span>
+    <h2 class="sec-title">PROFILE</h2>
+    <div class="sec-line"></div>
+    <span class="sec-tag">./about.exe</span>
+  </div>
+
+  <div class="terminal-panel appear">
+    <div class="terminal-topbar">
+      <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+      <span class="terminal-title-bar">SALMAN_SHAH :: USER_PROFILE.LOG</span>
+    </div>
+    <div class="terminal-text">
+      <div><span class="prompt">$</span><span class="cmd">cat about.txt</span></div>
+      <div class="out">Identity: Salman Shah | @Salman2shah</div>
+      <div class="out">Role: Content Creator, Graphics Designer, Web3 Explorer, Contributor</div>
+      <div class="out">Operating system: Focus · Discipline · Loyalty</div>
+      <div class="out">Clan affiliation: Uchiha | Sharingan: ACTIVE | Technique: Tsukuyomi</div>
+      <div class="out">Quote: "I don't have dreams because I will make them a reality."</div>
+      <br>
+      <div><span class="prompt">$</span><span class="cmd">status --verbose</span></div>
+      <div class="out" style="color:var(--cyan)">Building in the shadows. Designing with intention. Always shipping.</div>
+      <div class="out">Currently active on X, Discord, and Telegram.</div>
+      <div class="out">Every pixel placed with purpose. Every word with weight.</div>
+    </div>
+  </div>
+
+  <div class="profile-grid appear" style="margin-top:40px;">
+    <div class="profile-cell">
+      <div class="cell-label">SPECIALIZATION</div>
+      <div class="cell-val">DESIGN</div>
+      <div class="cell-sub">Graphics · Visual Identity</div>
+    </div>
+    <div class="profile-cell">
+      <div class="cell-label">FRONTIER</div>
+      <div class="cell-val">WEB3</div>
+      <div class="cell-sub">Blockchain · Crypto Explorer</div>
+    </div>
+    <div class="profile-cell">
+      <div class="cell-label">STATUS</div>
+      <div class="cell-val" style="color:var(--cyan)">ONLINE</div>
+      <div class="cell-sub">24 / 7 · Always Building</div>
+    </div>
+    <div class="profile-cell">
+      <div class="cell-label">TECHNIQUE</div>
+      <div class="cell-val">月読</div>
+      <div class="cell-sub">Tsukuyomi · Vision Unlocked</div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-header appear">
+    <span class="sec-num">[02]</span>
+    <h2 class="sec-title">ARSENAL</h2>
+    <div class="sec-line"></div>
+    <span class="sec-tag">./skills.sys</span>
+  </div>
+
+  <div class="skill-grid">
+    <div class="skill-module appear">
+      <div class="module-id">MODULE :: 001 // CREATIVE</div>
+      <div class="module-name">GRAPHICS DESIGN</div>
+      <p class="module-desc">Anime-grade artwork. Brand identities. Visual systems. Every design built to leave an impact and communicate beyond words.</p>
+      <div class="module-bar"><div class="module-bar-fill" data-width="95"></div></div>
+      <div class="module-pct">PWR :: 95%</div>
+    </div>
+    <div class="skill-module appear">
+      <div class="module-id">MODULE :: 002 // MEDIA</div>
+      <div class="module-name">CONTENT CREATION</div>
+      <p class="module-desc">Turning raw ideas into content that resonates across platforms. Scripting, editing, storytelling — all channels active.</p>
+      <div class="module-bar"><div class="module-bar-fill" data-width="95"></div></div>
+      <div class="module-pct">PWR :: 95%</div>
+    </div>
+    <div class="skill-module appear">
+      <div class="module-id">MODULE :: 003 // CHAIN</div>
+      <div class="module-name">WEB3 EXPLORER</div>
+      <p class="module-desc">Navigating the decentralized frontier. Projects, communities, and the future of digital ownership — actively contributing.</p>
+      <div class="module-bar"><div class="module-bar-fill" data-width="90"></div></div>
+      <div class="module-pct">PWR :: 90%</div>
+    </div>
+    <div class="skill-module appear">
+      <div class="module-id">MODULE :: 004 // SOCIAL</div>
+      <div class="module-name">COMMUNITY BUILD</div>
+      <p class="module-desc">Active participant and contributor in digital ecosystems. Building connections that matter and giving back to communities.</p>
+      <div class="module-bar"><div class="module-bar-fill" data-width="95"></div></div>
+      <div class="module-pct">PWR :: 95%</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="sec-header appear">
+    <span class="sec-num">[03]</span>
+    <h2 class="sec-title">CORE.PROTOCOL</h2>
+    <div class="sec-line"></div>
+    <span class="sec-tag">./philosophy.cfg</span>
+  </div>
+
+  <div class="pillar-cyber appear">
+    <div class="pillar-cell">
+      <span class="pillar-hex">0x01 // SHŪCHŪ</span>
+      <span class="pillar-word-cyber">FOCUS</span>
+      <p class="pillar-def">Lock the Sharingan on the target. Noise is the enemy of progress. Eliminate distractions, execute with precision.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-hex">0x02 // KIRITSU</span>
+      <span class="pillar-word-cyber">DISCIPLINE</span>
+      <p class="pillar-def">Consistency is the algorithm. Show up when motivation fails. Discipline converts dreams into system outputs.</p>
+    </div>
+    <div class="pillar-cell">
+      <span class="pillar-hex">0x03 // CHŪSEI</span>
+      <span class="pillar-word-cyber">LOYALTY</span>
+      <p class="pillar-def">To the mission. To the craft. To the people. Uchiha loyalty — absolute, unbreakable, and unconditional.</p>
+    </div>
+  </div>
+
+  <div class="big-system-quote appear">
+    "Reality is merely <em>an illusion</em> —<br>until you make it <em>undeniable.</em>"
+    <div style="margin-top:20px; font-size:11px; color:var(--muted); letter-spacing:3px;">現実は単なる幻想 // TSUKUYOMI.PROTOCOL</div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-header appear">
+    <span class="sec-num">[04]</span>
+    <h2 class="sec-title">CONNECT</h2>
+    <div class="sec-line"></div>
+    <span class="sec-tag">./contact.sh</span>
+  </div>
+
+  <div class="contact-cyber appear">
+    <div class="social-cyber">
+      <a class="social-entry" href="https://x.com/Salman2shah" target="_blank">
+        <div class="se-icon">𝕏</div>
+        <div class="se-info">
+          <div class="se-platform">X / TWITTER</div>
+          <div class="se-handle">@Salman2shah</div>
+        </div>
+        <span class="se-arrow">→</span>
+      </a>
+      <a class="social-entry" href="#" target="_blank">
+        <div class="se-icon">⚔</div>
+        <div class="se-info">
+          <div class="se-platform">DISCORD</div>
+          <div class="se-handle">Sssalman</div>
+        </div>
+        <span class="se-arrow">→</span>
+      </a>
+      <a class="social-entry" href="#" target="_blank">
+        <div class="se-icon">✉</div>
+        <div class="se-info">
+          <div class="se-platform">TELEGRAM</div>
+          <div class="se-handle">@Salmanshah08</div>
+        </div>
+        <span class="se-arrow">→</span>
+      </a>
+      <div class="terminal-panel" style="margin-top:2px; flex:1;">
+        <div class="terminal-topbar">
+          <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+          <span class="terminal-title-bar">STATUS.LIVE</span>
+        </div>
+        <div class="terminal-text">
+          <div><span class="prompt">$</span><span class="cmd">ping salmanshah</span></div>
+          <div class="out" style="color:var(--cyan)">... PONG. Response: 1ms. Node online.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form-cyber">
+      <div style="font-family:'Orbitron',sans-serif; font-size:18px; font-weight:700; letter-spacing:3px; color:var(--text); margin-bottom:8px;">SEND TRANSMISSION</div>
+      <p style="font-size:12px; color:var(--muted); margin-bottom:30px; line-height:2; letter-spacing:1px;">For collabs, projects, or connections — transmit a message. All serious signals receive a response.</p>
+      <label class="form-label">SENDER_ID</label>
+      <input class="cyber-input" id="form-name" type="text" placeholder="your_name" />
+      <label class="form-label">RETURN_ADDRESS</label>
+      <input class="cyber-input" id="form-email" type="email" placeholder="your@email.com" />
+      <label class="form-label">MESSAGE_BODY</label>
+      <textarea class="cyber-input" id="form-message" rows="5" placeholder="// enter your message here..."></textarea>
+      <div id="form-status" style="display:none; font-size:12px; letter-spacing:2px; margin-bottom:16px; padding:10px; border:1px solid; text-align:center;"></div>
+      <button class="btn-cyber" id="form-btn" onclick="sendTransmission()" style="width:100%; border:none; cursor:pointer;">TRANSMIT →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-id">SALMAN<span>×</span>SHAH</div>
+  <div class="footer-sys">FOCUS <span>·</span> DISCIPLINE <span>·</span> LOYALTY</div>
+  <div class="footer-sys" style="color:var(--neon)">うちはイタチ <span>·</span> 月読</div>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const cross = document.getElementById('cross');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cross.style.left=mx-10+'px'; cross.style.top=my-10+'px';
+});
+function animCursor(){
+  cx+=(mx-cx)*0.1; cy+=(my-cy)*0.1;
+  cursor.style.left=cx-10+'px'; cursor.style.top=cy-10+'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursor.style.transform='scale(2)');
+  el.addEventListener('mouseleave',()=>cursor.style.transform='scale(1)');
+});
+
+// Intersection Observer
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.module-bar-fill').forEach(b=>{
+        setTimeout(()=>{ b.style.width=b.dataset.width+'%'; },300);
+      });
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.appear').forEach(el=>obs.observe(el));
+
+// Stagger
+document.querySelectorAll('.skill-module,.pillar-cell,.profile-cell,.social-entry').forEach((el,i)=>{
+  el.style.transitionDelay=(i*0.08)+'s';
+});
+
+// Glitch random trigger
+setInterval(()=>{
+  const titles = document.querySelectorAll('.glitch-title');
+  titles.forEach(t=>{
+    t.style.animation='none';
+    setTimeout(()=>{ t.style.animation=''; },50);
+  });
+},5000);
+</script>
+
+<script>
+  // ── EmailJS Setup ──────────────────────────────────────────────
+  // STEP 1: Go to https://www.emailjs.com and sign up (free)
+  // STEP 2: Add an Email Service (Gmail) → copy your Service ID below
+  // STEP 3: Create an Email Template → copy your Template ID below
+  // STEP 4: Go to Account → API Keys → copy your Public Key below
+  // Then replace the placeholder strings below with your real values.
+
+  emailjs.init("YOUR_PUBLIC_KEY"); // ← paste your EmailJS Public Key here
+
+  function sendTransmission() {
+    const name    = document.getElementById('form-name').value.trim();
+    const email   = document.getElementById('form-email').value.trim();
+    const message = document.getElementById('form-message').value.trim();
+    const status  = document.getElementById('form-status');
+    const btn     = document.getElementById('form-btn');
+
+    if (!name || !email || !message) {
+      status.style.display = 'block';
+      status.style.color   = '#ff0033';
+      status.style.borderColor = '#ff0033';
+      status.textContent = '// ERROR :: ALL FIELDS REQUIRED';
+      return;
+    }
+
+    btn.textContent = 'TRANSMITTING...';
+    btn.disabled = true;
+    status.style.display = 'none';
+
+    emailjs.send(
+      "YOUR_SERVICE_ID",   // ← paste your EmailJS Service ID here
+      "YOUR_TEMPLATE_ID",  // ← paste your EmailJS Template ID here
+      {
+        from_name:    name,
+        from_email:   email,
+        message:      message,
+        to_email:     "Farshisalman91@gmail.com"
+      }
+    ).then(() => {
+      status.style.display  = 'block';
+      status.style.color    = '#00ffcc';
+      status.style.borderColor = '#00ffcc';
+      status.textContent    = '// TRANSMISSION SUCCESSFUL :: MESSAGE SENT';
+      document.getElementById('form-name').value    = '';
+      document.getElementById('form-email').value   = '';
+      document.getElementById('form-message').value = '';
+      btn.textContent = 'TRANSMIT →';
+      btn.disabled = false;
+    }).catch((err) => {
+      status.style.display  = 'block';
+      status.style.color    = '#ff0033';
+      status.style.borderColor = '#ff0033';
+      status.textContent    = '// TRANSMISSION FAILED :: CHECK EMAILJS SETUP';
+      btn.textContent = 'TRANSMIT →';
+      btn.disabled = false;
+      console.error('EmailJS error:', err);
+    });
+  }
+</script>
+<!-- Web3Forms -->
+<script>
+  async function sendTransmission() {
+    const name    = document.getElementById('form-name').value.trim();
+    const email   = document.getElementById('form-email').value.trim();
+    const message = document.getElementById('form-message').value.trim();
+    const status  = document.getElementById('form-status');
+    const btn     = document.getElementById('form-btn');
+
+    if (!name || !email || !message) {
+      status.style.display     = 'block';
+      status.style.color       = '#ff0033';
+      status.style.borderColor = '#ff0033';
+      status.textContent       = '// ERROR :: ALL FIELDS REQUIRED';
+      return;
+    }
+
+    btn.textContent = 'TRANSMITTING...';
+    btn.disabled    = true;
+    status.style.display = 'none';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_KEY",
+          name:    name,
+          email:   email,
+          message: message,
+          subject: "New Transmission from " + name
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        status.style.display     = 'block';
+        status.style.color       = '#00ffcc';
+        status.style.borderColor = '#00ffcc';
+        status.textContent       = '// TRANSMISSION SUCCESSFUL :: MESSAGE SENT';
+        document.getElementById('form-name').value    = '';
+        document.getElementById('form-email').value   = '';
+        document.getElementById('form-message').value = '';
+      } else {
+        throw new Error(data.message);
+      }
+    } catch(err) {
+      status.style.display     = 'block';
+      status.style.color       = '#ff0033';
+      status.style.borderColor = '#ff0033';
+      status.textContent       = '// TRANSMISSION FAILED :: ' + err.message;
+    }
+
+    btn.textContent = 'TRANSMIT →';
+    btn.disabled    = false;
+  }
+</script>
+</body>
+</html>
